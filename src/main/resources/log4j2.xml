@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" monitorInterval="1">
+  <Filters>
+    <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+    <!--<MarkerFilter marker="TWO" onMatch="ACCEPT" onMismatch="NEUTRAL"/>-->
+    <!--<MarkerFilter marker="ONE" onMatch="ACCEPT" onMismatch="DENY"/>-->
+  </Filters>
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS}{GMT+3} [%t] %-5level %c{1.} - %m%n"/>
+    </Console>
+    <RollingFile name="Rolling" fileName="logs/my.log" filePattern="logs/%d{MM-dd-yyyy}/my-%i.log">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+      <Policies>
+        <TimeBasedTriggeringPolicy/>
+        <SizeBasedTriggeringPolicy size="4 KB"/>
+      </Policies>
+    </RollingFile>
+    <!--<Async name="Async">-->
+    <!--<AppenderRef ref="Console"/>-->
+    <!--</Async>-->
+  </Appenders>
+  <Loggers>
+    <Logger name="com.odessaflat.utils.ContentLoader" level="trace">
+    </Logger>
+    <Logger name="com.odessaflat.crawler.Crawler" level="trace">
+      <!--<AppenderRef ref="Console"/>-->
+    </Logger>
+    <AsyncRoot level="error">
+      <AppenderRef ref="Console"/>
+      <!--<AppenderRef ref="Rolling"/>-->
+    </AsyncRoot>
+  </Loggers>
+</Configuration>
+
