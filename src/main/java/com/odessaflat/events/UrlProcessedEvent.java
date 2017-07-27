@@ -8,8 +8,16 @@ public class UrlProcessedEvent extends Event {
   private String content;
 
   public UrlProcessedEvent(Object sender, UrlInfo urlInfo) {
-    super(sender);
+    super(sender, EventType.URL_PROCESSED);
     this.urlInfo = urlInfo;
+  }
+
+  public UrlInfo getUrlInfo() {
+    return urlInfo;
+  }
+
+  public String getContent() {
+    return content;
   }
 
   @Override

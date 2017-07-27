@@ -7,7 +7,7 @@ public class UrlFoundEvent extends Event {
   private URL url;
 
   public UrlFoundEvent(Object sender, URL url) {
-    super(sender);
+    super(sender, EventType.URL_FOUND);
     this.url = url;
   }
 

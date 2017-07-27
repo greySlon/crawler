@@ -1,5 +1,6 @@
 package com.odessaflat.crawler;
 
+import com.odessaflat.filters.Filter;
 import com.odessaflat.domain.UrlInfo;
 import com.odessaflat.events.CrawlerStopedEvent;
 import com.odessaflat.events.Event;
@@ -11,7 +12,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
@@ -29,15 +29,20 @@ public class Crawler {
   private BlockingQueue<Event> blockingQueue;
   private HashMap<URL, UrlInfo> urlInfoMap;
   private String host;
+  private Filter filter;
   @Autowired
   private LinkExtractor linkExtractor;
+
+  public void setFilter(Filter filter) {
+    this.filter = filter;
+  }
 
   public Crawler() {
     urlInfoMap = new HashMap<>();
     blockingQueue = new ArrayBlockingQueue<Event>(200);
   }
 
-  public void startCrawl(URL url) throws Exception {
+  public void startCrawl(URL url) {
     logger.traceEntry("start URL{}", url);
     urlInfoMap.put(url, new UrlInfo(url));
     host = url.getHost();
@@ -45,7 +50,7 @@ public class Crawler {
     while (true) {
       List<UrlInfo> urlInfoCollection = getUrlInfoToProcessed();
       if (urlInfoCollection.isEmpty()) {
-        blockingQueue.add(new CrawlerStopedEvent(this));
+        sendMessage(new CrawlerStopedEvent(this));
         logger.debug("CrawlerStopedEvent has published");
         break;
       }
@@ -55,12 +60,18 @@ public class Crawler {
           linkExtractor.getUrls(itemUrl, urlInfo.getContent())
               .forEach(link -> storeLinkData(link, itemUrl));
           urlInfo.setProcessed(true);
-          blockingQueue.add(new UrlProcessedEvent(this, urlInfo));
+          sendMessage(new UrlProcessedEvent(this, urlInfo));
           logger.debug("URL processed:{}", itemUrl);
         } catch (ContentLoaderException ex) {
           logger.catching(Level.INFO, ex);
         }
       }
+    }
+  }
+
+  private void sendMessage(Event event) {
+    if (filter.test(event)) {
+      blockingQueue.add(event);
     }
   }
 
@@ -71,7 +82,7 @@ public class Crawler {
     } else {
       urlInfoMap.put(link, new UrlInfo(link, parent));
       logger.debug("New URL found:{}", link);
-      blockingQueue.add(new UrlFoundEvent(this, link));
+      sendMessage(new UrlFoundEvent(this, link));
     }
   }
 
