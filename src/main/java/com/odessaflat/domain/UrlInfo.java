@@ -5,24 +5,37 @@ import com.odessaflat.utils.ContentLoader;
 
 import java.net.URL;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public class UrlInfo {
 
   private URL url;
-  private Set<URL> parents;
+  private HashSet<URL> parents;
   private boolean processed;
   private int httpStatusCode;
   private ContentLoader loader = new ContentLoader();
 
   public UrlInfo(URL url) {
-    this(url, null);
+    this(url, url);
   }
 
   public UrlInfo(URL url, URL parent) {
     this.parents = new HashSet<>();
     this.url = url;
-    this.parents.add(parent);
+    if (parent != null) {
+      this.parents.add(parent);
+    }
+  }
+
+  public boolean isOuterLink() {
+    Optional<URL> parent = parents
+        .stream()
+        .findAny();
+    if (parent.isPresent()) {
+      return !parent.get().getHost().equals(url.getHost());
+    }
+    return false;
   }
 
   public Set<URL> getParents() {

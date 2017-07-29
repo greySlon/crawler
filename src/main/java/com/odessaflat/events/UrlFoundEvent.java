@@ -1,21 +1,25 @@
 package com.odessaflat.events;
 
-import java.net.URL;
+import com.odessaflat.domain.UrlInfo;
 
 public class UrlFoundEvent extends Event {
 
-  private URL url;
+  private UrlInfo urlInfo;
 
-  public UrlFoundEvent(Object sender, URL url) {
+  public UrlFoundEvent(Object sender, UrlInfo urlInfo) {
     super(sender, EventType.URL_FOUND);
-    this.url = url;
+    this.urlInfo = urlInfo;
+  }
+
+  public UrlInfo getUrlInfo() {
+    return urlInfo;
   }
 
   @Override
   public String toString() {
-    return "UrlFoundEvent{"
-        + "sender=" + sender
-        + ", url=" + url
-        + '}';
+    return "UrlFoundEvent{" +
+        "eventType=" + eventType +
+        ", urlInfo=" + urlInfo +
+        '}';
   }
 }

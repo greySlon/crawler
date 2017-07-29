@@ -22,9 +22,9 @@ public class UrlProcessedEvent extends Event {
 
   @Override
   public String toString() {
-    return "UrlProcessedEvent{"
-        + "sender=" + sender
-        + ", url=" + urlInfo.getUrl()
-        + '}';
+    return "UrlProcessedEvent{" +
+        "eventType=" + eventType +
+        ", urlInfo=" + urlInfo +
+        '}';
   }
 }
